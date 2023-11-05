@@ -1,35 +1,95 @@
 import File from "../models/FileUpload.model.js";
-import {fileURLToPath} from 'url'
-import {dirname} from 'path'
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import cloudinary from "cloudinary";
 
 export const localFileUpload = async (req, res) => {
   try {
     //fetch file
-    const file = req.files.file
+    const file = req.files.file;
 
-    console.log("File" + file);
-
-	const __filename = fileURLToPath(import.meta.url);
+    const __filename = fileURLToPath(import.meta.url);
     const __dirname = dirname(__filename);
 
+    let path = `${__dirname}/files/${Date.now()}.${file.name.split(".")[1]}`;
 
-    let path = __dirname + "/files/" + Date.now() + "." + file.name.split('.')[1];
-
-    console.log("path" + path);
-
-    file.mv(path,(err)=>{
-		console.log(err);
-	})
+    file.mv(path, (err) => {
+      console.log(err);
+    });
 
     res.status(200).json({
       success: true,
       message: "Local file uploaded succesfully.",
     });
-
   } catch (error) {
     res.status(502).json({
       success: false,
       message: error.message,
+    });
+  }
+};
+
+//Image upload handler
+
+function isFileTypeSupported(type, supportedTypes) {
+  return supportedTypes.includes(type);
+}
+
+async function uploadFileToCloudinary(file, folder) {
+  return await cloudinary.v2.uploader.upload(file.tempFilePath, { folder });
+}
+
+export const imageUpload = async (req, res) => {
+  try {
+    //fetch data
+
+    const { name, tags, email } = req.body;
+
+	if(!name || !tags || !email){
+		return res.status(400).json({
+			success:false,
+			message:"All fields are mandatory."
+		})
+	}
+
+    console.log(name, tags, email);
+
+    const file = req.files.imageFile;
+
+    //Validation
+
+    const supportedTypes = ["jpg", "jpeg", "png"];
+    const fileType = file.name.split(".")[1].toLowerCase();
+
+
+    if (!isFileTypeSupported(fileType, supportedTypes)) {
+      return res.status(400).json({
+        success: false,
+        message: "File type not supported.",
+      });
+    }
+	
+    const response = await uploadFileToCloudinary(file, "sample");
+
+    console.log(response);
+
+    //save to database
+
+    // const fileData = await File.create({
+    // 	name,
+    // 	tags,
+    // 	email,
+    // 	imageUrl
+    // })
+
+    res.status(200).json({
+      success: true,
+      message: "Image uploaded successfully.",
+    });
+  } catch (error) {
+    res.status(502).json({
+      success: false,
+      message: "Error:" + error
     });
   }
 };
