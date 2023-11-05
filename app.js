@@ -1,6 +1,6 @@
 import express, { urlencoded } from "express";
-import fileupload from 'express-fileupload'
-import { fileUpload } from "./controllers/FileUpload.controller.js";
+import fileUpload from 'express-fileupload'
+import { localFileUpload } from "./controllers/FileUpload.controller.js";
 
 export const app = express()
 
@@ -8,9 +8,9 @@ app.use(express.json())
 
 app.use(urlencoded({extended:true}))
 
-app.use(fileupload())
+app.use(fileUpload())
 
-app.use('/api/upload',fileUpload)
+app.use('/api/upload',localFileUpload)
 
 
 app.all((req,res)=>{
