@@ -78,7 +78,7 @@ export const imageUpload = async (req, res) => {
       name,
       tags,
       email,
-      imageUrl: response.secure_url,
+      mediaUrl: response.secure_url,
     });
 
     await fileData.save();
@@ -122,6 +122,20 @@ export const videoUpload = async (req, res) => {
 
     console.log(file);
     const response = await uploadFileToCloudinary(file, "sample");
+
+    const fileData = await File.create({
+      name,
+      tags,
+      email,
+      mediaUrl: response.secure_url,
+    }); 
+
+    res.status(200).json({
+      success:true,
+      message:"Video uploaded successfully.",
+      imageUrl:response.secure_url
+    })
+
   } catch (error) {
     res.status(502).json({
       success: false,

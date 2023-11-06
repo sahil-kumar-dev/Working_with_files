@@ -5,7 +5,7 @@ const fileSchema = new Schema({
     type: String,
     required: true,
   },
-  imageUrl: {
+  mediaUrl: {
     type: String,
   },
   tags: {
