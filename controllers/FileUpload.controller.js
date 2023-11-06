@@ -128,14 +128,15 @@ export const videoUpload = async (req, res) => {
       tags,
       email,
       mediaUrl: response.secure_url,
-    }); 
+    });
+
+    fileData.save();
 
     res.status(200).json({
-      success:true,
-      message:"Video uploaded successfully.",
-      imageUrl:response.secure_url
-    })
-
+      success: true,
+      message: "Video uploaded successfully.",
+      imageUrl: response.secure_url,
+    });
   } catch (error) {
     res.status(502).json({
       success: false,
