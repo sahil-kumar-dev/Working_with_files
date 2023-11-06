@@ -1,6 +1,5 @@
 import express, { urlencoded } from "express";
 import fileUpload from 'express-fileupload'
-import { localFileUpload } from "./controllers/FileUpload.controller.js";
 import uploadRoute from './routes/FileUpload.routes.js'
 
 export const app = express()
@@ -11,7 +10,8 @@ app.use(urlencoded({extended:true}))
 
 app.use(fileUpload({
 	useTempFiles:true,
-	tempFileDir:'/tmp/'
+	tempFileDir:'/tmp/',
+	limits: { fileSize: 500 * 1024 * 1024 }
 }))
 
 app.use('/api/upload',uploadRoute)
