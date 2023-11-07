@@ -3,6 +3,21 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import cloudinary from "cloudinary";
 
+//Image upload handler
+
+function isFileTypeSupported(type, supportedTypes) {
+  return supportedTypes.includes(type);
+}
+
+async function uploadFileToCloudinary(file, folder) {
+  const options = {
+    folder,
+    resource_type: "auto",
+  };
+  return await cloudinary.v2.uploader.upload(file.tempFilePath, options);
+}
+
+
 export const localFileUpload = async (req, res) => {
   try {
     //fetch file
@@ -28,20 +43,6 @@ export const localFileUpload = async (req, res) => {
     });
   }
 };
-
-//Image upload handler
-
-function isFileTypeSupported(type, supportedTypes) {
-  return supportedTypes.includes(type);
-}
-
-async function uploadFileToCloudinary(file, folder) {
-  const options = {
-    folder,
-    resource_type: "auto",
-  };
-  return await cloudinary.v2.uploader.upload(file.tempFilePath, options);
-}
 
 export const imageUpload = async (req, res) => {
   try {
@@ -130,12 +131,12 @@ export const videoUpload = async (req, res) => {
       mediaUrl: response.secure_url,
     });
 
-    fileData.save();
+    await fileData.save();
 
     res.status(200).json({
       success: true,
       message: "Video uploaded successfully.",
-      imageUrl: response.secure_url,
+      data: response.secure_url
     });
   } catch (error) {
     res.status(502).json({
